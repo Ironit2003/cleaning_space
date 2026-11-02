@@ -1,5 +1,5 @@
 #!/bin/bash
-#ver 2.0
+#ver 2.01
 
 # Путь к проверяемой папке
 # TARGET_DIR="//192.168.7.8/arhiv_video/test"
