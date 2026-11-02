@@ -1,5 +1,5 @@
 #!/bin/bash
-#ver 2.01
+#ver 2.02
 
 # Путь к проверяемой папке
 # TARGET_DIR="//192.168.7.8/arhiv_video/test"
@@ -12,6 +12,16 @@ TARGET_DIR="/volume1/ARHIV_VIDEO/192.168.88.100"
 MAX_SIZE=8576190696653
 # Примерный размер одного файла (10 МБ)
 FILE_SIZE=10485760
+
+# Путь к файлу лога
+LOG_FILE="/volume1/ARHIV_VIDEO/script/cleanup.log"
+
+# Перенаправляем стандартный вывод (stdout) и ошибки (stderr) в лог-файл
+# Символ >> означает, что лог будет дополняться, а не перезаписываться
+exec > >(tee -a "$LOG_FILE") 2>&1
+
+# (Опционально) Добавим дату начала проверки для наглядности лога
+echo "=== Запуск скрипта удаления: $(date '+%Y-%m-%d %H:%M:%S') ==="
 
 echo "Проверяем директорию: $TARGET_DIR"
 
@@ -41,7 +51,7 @@ if [ "$CURRENT_SIZE" -gt "$MAX_SIZE" ]; then
     
     # find запускается ОДИН раз. 
     # Он находит файлы, сортирует и с помощью 'head -n' берет ровно $FILE_COUNT штук.
-    find "$TARGET_DIR" -type f -printf '%T+ %p\n' 2>/dev/null | sort | head -n "$FILE_COUNT" | cut -d' ' -f2- | while read -r OLDEST_FILE; do
+    find "$TARGET_DIR" -type f -printf '%T+\t%p\n' 2>/dev/null | sort | head -n "$FILE_COUNT" | cut -f2- | while read -r OLDEST_FILE; do
         if [ -n "$OLDEST_FILE" ]; then
             echo "Удаляем старый файл: $OLDEST_FILE"
             rm -f "$OLDEST_FILE"
