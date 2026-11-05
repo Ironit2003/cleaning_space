@@ -1,5 +1,5 @@
 #!/bin/bash
-#ver 2.03
+#ver 2.04
 
 # Путь к проверяемой папке
 # TARGET_DIR="//192.168.7.8/arhiv_video/test"
@@ -35,9 +35,9 @@ if ! [[ "$CURRENT_SIZE" =~ ^[0-9]+$ ]]; then
 fi
 
 # Расчет размеров в GB и %
-CURRENT_GB=$(echo "scale=2; $CURRENT_SIZE / 1024 / 1024 / 1024" | bc)
-MAX_GB=$(echo "scale=2; $MAX_SIZE / 1024 / 1024 / 1024" | bc)
-PERCENT=$(echo "scale=1; ($CURRENT_SIZE * 100) / $MAX_SIZE" | bc)
+CURRENT_GB=$(awk -v size="$CURRENT_SIZE" 'BEGIN {printf "%.2f", size / 1024 / 1024 / 1024}')
+MAX_GB=$(awk -v max="$MAX_SIZE" 'BEGIN {printf "%.2f", max / 1024 / 1024 / 1024}')
+PERCENT=$(awk -v size="$CURRENT_SIZE" -v max="$MAX_SIZE" 'BEGIN {printf "%.1f", (size * 100) / max}')
 
 # Вывод зармера папки в GB и %
 echo "Текущий размер папки: ${CURRENT_GB} GB из ${MAX_GB} GB (${PERCENT}% занято)"
